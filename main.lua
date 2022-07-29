@@ -1,5 +1,7 @@
 if profiler then profiler:Destroy() profiler = nil end
 
+local path = "https://raw.githubusercontent.com/saucekid/Roblox-Profiler/main/"
+
 -- // <Constants>
 local getAsset = getsynasset or getcustomasset
 local request = request or syn.request
@@ -12,6 +14,10 @@ local LocalPlayer = Players.LocalPlayer;
 local CurrentCamera = workspace.CurrentCamera;
 local Mouse = LocalPlayer:GetMouse();
 
+local Terpy = loadstring(game:HttpGet(path .. "modules/Terpy.lua"))()
+local Highlight = loadstring(game:HttpGet(path .. "modules/Highlight.lua"))()
+
+-- // <Miscellaneous Function>
 function getRAP(plr)
     local g = request({
         Url = "https://inventory.roblox.com/v1/users/" .. plr.UserId .. "/assets/collectibles?sortOrder=Asc&limit=100",
@@ -43,13 +49,6 @@ function typeWrite(obj, text)
         end
     end)
 end
-
-local path = "https://raw.githubusercontent.com/saucekid/Ro-Profiler/main/"
-
-
-local Terpy = loadstring(game:HttpGet(path .. "modules/Terpy.lua"))()
-local Highlight = loadstring(game:HttpGet(path .. "modules/Highlight.lua"))()
-
 
 -- // <Files & Assets>
 local folder = "Ro-Profiler";
