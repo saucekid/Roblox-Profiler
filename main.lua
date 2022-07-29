@@ -44,73 +44,68 @@ function typeWrite(obj, text)
     end)
 end
 
+local path = "https://raw.githubusercontent.com/saucekid/Ro-Profiler/main/"
 
-return function(path)
-    if not path then
-        path = "https://raw.githubusercontent.com/saucekid/Ro-Profiler/main/"
-    else
-        path = "https://raw.githubusercontent.com/" .. path .. "/main/"
+
+local Terpy = loadstring(game:HttpGet(path .. "modules/Terpy.lua"))()
+local Highlight = loadstring(game:HttpGet(path .. "modules/Highlight.lua"))()
+
+
+-- // <Files & Assets>
+local folder = "Ro-Profiler";
+
+local function getGitAsset(p) --this shit sucks help
+    local folderPath = folder.. "/".. p
+    local gitPath = path.. p
+    local req = request({
+        Url = gitPath,
+        Method = "GET"
+    })
+    writefile(folderPath, req.Body)
+end
+
+if (not isfolder(folder)) then
+    makefolder(folder)
+    makefolder(folder .. "/assets")
+    makefolder(folder .. "/assets/images")
+    makefolder(folder .. "/assets/videos")
+end
+
+--BRUH IS THERE ANY OTHER WAY TO DO THIS
+getGitAsset("assets/Profiler.rbxm")
+getGitAsset("assets/images/checkers.png") 
+getGitAsset("assets/images/Skull.png")
+getGitAsset("assets/images/RAP.png")
+getGitAsset("assets/images/Frame.png")
+getGitAsset("assets/images/Teleport.png")
+getGitAsset("assets/images/Friend.png")
+getGitAsset("assets/videos/Glitch.webm")
+
+local profilerPart, profilerGui = game:GetObjects(getAsset(folder .. "/assets/Profiler.rbxm"))[1] do
+    profilerPart.Transparency = 1
+    profilerPart.Parent = CurrentCamera
+    profilerGui = profilerPart:WaitForChild("ProfilerGui").BackgroundFrame;
+end
+
+local images = {} do
+    for _, img in next, listfiles(folder .. "/assets/images") do
+        local assetID = getAsset(img)
+        images[img:sub(27):gsub(".png", "")] = assetID
     end
+end
 
-    local Terpy = loadstring(game:HttpGet(path .. "modules/Terpy.lua"))()
-    local Highlight = loadstring(game:HttpGet(path .. "modules/Highlight.lua"))()
-
-
-    -- // <Files & Assets>
-    local folder = "Ro-Profiler";
-
-    local function getGitAsset(p) --this shit sucks help
-        local folderPath = folder.. "/".. p
-        local gitPath = path.. p
-        local req = request({
-            Url = gitPath,
-            Method = "GET"
-        })
-        writefile(folderPath, req.Body)
+local videos = {} do
+    for _, img in next, listfiles(folder .. "/assets/videos") do
+        local assetID = getAsset(img)
+        videos[img:sub(27):gsub(".webm", "")] = assetID
     end
+end
 
-    if (not isfolder(folder)) then
-        makefolder(folder)
-        makefolder(folder .. "/assets")
-        makefolder(folder .. "/assets/images")
-        makefolder(folder .. "/assets/videos")
-    end
+-- // <Profiler>
+getgenv().profiler = {}
 
-    --BRUH IS THERE ANY OTHER WAY TO DO THIS
-    getGitAsset("assets/Profiler.rbxm")
-    getGitAsset("assets/images/checkers.png") 
-    getGitAsset("assets/images/Skull.png")
-    getGitAsset("assets/images/RAP.png")
-    getGitAsset("assets/images/Frame.png")
-    getGitAsset("assets/images/Teleport.png")
-    getGitAsset("assets/images/Friend.png")
-    getGitAsset("assets/videos/Glitch.webm")
-
-    local profilerPart, profilerGui = game:GetObjects(getAsset(folder .. "/assets/Profiler.rbxm"))[1] do
-        profilerPart.Transparency = 
-        profilerPart.Parent = CurrentCamera
-        profilerGui = profilerPart:WaitForChild("ProfilerGui").BackgroundFrame;
-    end
-
-    local images = {} do
-        for _, img in next, listfiles(folder .. "/assets/images") do
-            local assetID = getAsset(img)
-            images[img:sub(27):gsub(".png", "")] = assetID
-        end
-    end
-
-    local videos = {} do
-        for _, img in next, listfiles(folder .. "/assets/videos") do
-            local assetID = getAsset(img)
-            videos[img:sub(27):gsub(".webm", "")] = assetID
-        end
-    end
-
-    -- // <Profiler>
-    getgenv().profiler = {}
-
-    profiler.Offset = CFrame.new(5, 0, -15)
-    profiler.Occupations = {
+profiler.Offset = CFrame.new(5, 0, -15)
+profiler.Occupations = {
         "Professional Skater",
         "Monkey Catcher",
         "Lawyer",
@@ -128,9 +123,9 @@ return function(path)
         "Shoe-maker",
         "Grass toucher",
         "Food tester"
-    }
+}
 
-    profiler.Interests = {
+profiler.Interests = {
         "Hasn't touched grass",
         "Skilled Sword Fighter",
         "Huffs paint",
@@ -145,32 +140,32 @@ return function(path)
         "Milf-Enjoyer",
         "Birthday Boy"
 
-    }
+}
 
-    profiler.Highlight = Highlight.create(workspace.Terrain, {
+profiler.Highlight = Highlight.create(workspace.Terrain, {
         Enabled = true,
         FillTransparency = 1,
         OutlineColor = Color3.new(1, 1, 1),
-    })
-    profiler.Terpy = Terpy.new(profilerGui.Parent)
+})
+profiler.Terpy = Terpy.new(profilerGui.Parent)
 
-    profiler.Target = nil
-    profiler.TargetEvent = Instance.new("BindableEvent")
-    profiler.Visible = true
+profiler.Target = nil
+profiler.TargetEvent = Instance.new("BindableEvent")
+profiler.Visible = true
 
-    profiler.Assets = {
-        BackgroundVideo = profilerGui.VideoFrame,
-        ProfileImage = profilerGui.ProfileImage,
-        ProfileFrame = profilerGui.ProfileImage.Frame,
-        InfoFrame = profilerGui.InfoFrame,
-        ColorTargets = {
-            { ["Target"] = profilerGui.ProfileImage.Frame, ["Change"] = "ImageColor3" },
-            { ["Target"] = profilerGui.ProfileImage.InfoImage, ["Change"] = "BackgroundColor3" },
-            { ["Target"] = profilerGui.ProfileImage.InfoImage2, ["Change"] = "BackgroundColor3" },
-        }
+profiler.Assets = {
+    BackgroundVideo = profilerGui.VideoFrame,
+    ProfileImage = profilerGui.ProfileImage,
+    ProfileFrame = profilerGui.ProfileImage.Frame,
+    InfoFrame = profilerGui.InfoFrame,
+    ColorTargets = {
+        { ["Target"] = profilerGui.ProfileImage.Frame, ["Change"] = "ImageColor3" },
+        { ["Target"] = profilerGui.ProfileImage.InfoImage, ["Change"] = "BackgroundColor3" },
+        { ["Target"] = profilerGui.ProfileImage.InfoImage2, ["Change"] = "BackgroundColor3" },
     }
+}
 
-    profiler.Info = {
+profiler.Info = {
         Image = profilerGui.ProfileImage,
         Name = profilerGui.InfoFrame:FindFirstChild("Name"),
         Age = profilerGui.InfoFrame.Age,
@@ -179,9 +174,9 @@ return function(path)
         RAP = profilerGui.InfoFrame.RAP,
         InfoImage = profilerGui.ProfileImage.InfoImage,
         InfoImage2 = profilerGui.ProfileImage.InfoImage2
-    }
+}
 
-    profiler.Modes = {
+profiler.Modes = {
         ["Default"] = {
             Color = Color3.fromRGB(0, 0, 0),
             check = function() return true end,
@@ -234,155 +229,152 @@ return function(path)
             end,
             Priority = 3
         }
-    }
+}
 
-    function profiler:GetRandomInterest()
-        return self.Interests[math.random(1, #self.Interests)]
-    end
+function profiler:GetRandomInterest()
+    return self.Interests[math.random(1, #self.Interests)]
+end
 
-    function profiler:GetRandomOccupation()
-        return self.Occupations[math.random(1, #self.Occupations)]
-    end
+function profiler:GetRandomOccupation()
+    return self.Occupations[math.random(1, #self.Occupations)]
+end
 
-    function profiler:SetVisible(visibility, tween)
-        if visibility ~= self.Visible then
-            self.Visible = visibility
-            self.Assets.BackgroundVideo.Visible = visibility
-            local transparency = visibility and 0 or 1
-            if tween then
-                self.Terpy:TweenTransparency(TweenInfo.new(.3), transparency)
-            else
-                self.Terpy:SetTransparency(transparency, true)
-            end
+function profiler:SetVisible(visibility, tween)
+    if visibility ~= self.Visible then
+        self.Visible = visibility
+        self.Assets.BackgroundVideo.Visible = visibility
+        local transparency = visibility and 0 or 1
+        if tween then
+            self.Terpy:TweenTransparency(TweenInfo.new(.3), transparency)
+        else
+            self.Terpy:SetTransparency(transparency, true)
         end
     end
+end
 
-    function profiler:SetColor(color, name)
-        local brightness = (color.R + color.G + color.B) / 3
-        self.Info.InfoImage.Color = brightness >= 0.5 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
-        self.Info.InfoImage2.Color = brightness >= 0.5 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
-        for _, t in pairs(self.Assets.ColorTargets) do
-            t.Target[t.Change] = color
-        end
-        for _, t in pairs(self.Assets.ColorTargets) do
-            t.Target[t.Change] = color
+function profiler:SetColor(color, name)
+    local brightness = (color.R + color.G + color.B) / 3
+    self.Info.InfoImage.Color = brightness >= 0.5 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
+    self.Info.InfoImage2.Color = brightness >= 0.5 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
+    for _, t in pairs(self.Assets.ColorTargets) do
+        t.Target[t.Change] = color
+    end
+    for _, t in pairs(self.Assets.ColorTargets) do
+        t.Target[t.Change] = color
+    end
+end
+
+function profiler:Destroy()
+    profilerPart:Destroy()
+    self.TargetEvent:Destroy()
+    self.Highlight:Destroy()
+    self.profilerCon:Disconnect()
+    self.controlCon:Disconnect()
+    self.OnTarget:Disconnect()
+end
+
+function profiler:SetTarget(chr)
+    local plr = Players:GetPlayerFromCharacter(chr)
+    if plr and self.Target ~= chr then
+        self.Target = chr
+        local plrInfo = {
+            Name = plr.Name,
+            DisplayName = plr.DisplayName,
+            RAP = getRAP(plr),
+            Character = chr,
+            UserId = plr.UserId,
+            Team = plr.Team,
+            Age = plr.AccountAge,
+            Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. plr.UserId .. "&width=50&height=50&format=png"
+        }
+        self.TargetEvent:Fire(plrInfo)
+    end
+end
+    
+profiler.OnTarget = profiler.TargetEvent.Event:Connect(function(plrInfo)
+    local passed = {}
+    for _, mode in pairs(profiler.Modes) do
+        local check = mode.check(plrInfo)
+        if check then
+            table.insert(passed, mode)
         end
     end
-
-    function profiler:Destroy()
-        profilerPart:Destroy()
-        self.TargetEvent:Destroy()
-        self.Highlight:Destroy()
-        self.profilerCon:Disconnect()
-        self.controlCon:Disconnect()
-        self.OnTarget:Disconnect()
-    end
-
-    function profiler:SetTarget(chr)
-        local plr = Players:GetPlayerFromCharacter(chr)
-        if plr and self.Target ~= chr then
-            self.Target = chr
-            local plrInfo = {
-                Name = plr.Name,
-                DisplayName = plr.DisplayName,
-                RAP = getRAP(plr),
-                Character = chr,
-                UserId = plr.UserId,
-                Team = plr.Team,
-                Age = plr.AccountAge,
-                Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. plr.UserId .. "&width=50&height=50&format=png"
-            }
-            self.TargetEvent:Fire(plrInfo)
+    local highestPriority = 0
+    local currentMode
+    for _, mode in pairs(passed) do
+        if mode.Priority > highestPriority then
+            highestPriority = mode.Priority
+            currentMode = mode
         end
     end
+    currentMode.func(profiler)
+    profiler:SetColor(currentMode.Color)
+    
+    profiler.Info.Image.Image = plrInfo.Image
+    typeWrite(profiler.Info.Name, plrInfo.DisplayName ~= plrInfo.Name and " " .. plrInfo.DisplayName .. " @" .. plrInfo.Name or " " .. plrInfo.Name)
+    typeWrite(profiler.Info.Age, " Age: " .. tostring(plrInfo.Age))
+    typeWrite(profiler.Info.RAP, " RAP: " .. tostring(plrInfo.RAP))
+    typeWrite(profiler.Info.Interest, " " .. profiler:GetRandomInterest())
+    typeWrite(profiler.Info.Occupation, " Occupation: " .. profiler:GetRandomOccupation())
+    task.wait(0.2)
+    profiler:SetVisible(true, true)
+end)
 
-    profiler.OnTarget = profiler.TargetEvent.Event:Connect(function(plrInfo)
-        local passed = {}
-        for _, mode in pairs(profiler.Modes) do
-            local check = mode.check(plrInfo)
-            if check then
-                table.insert(passed, mode)
-            end
+profiler.profilerCon = RunService.RenderStepped:Connect(function(dt)
+    profilerPart.CFrame = profilerPart.CFrame:Lerp(CFrame.new(profilerPart.Position, CurrentCamera.CFrame.Position),
+        dt * 2)
+    profilerPart.Position = (CurrentCamera.CFrame * profiler.Offset).Position
+    
+    if profiler.Target then
+        profiler.Highlight:Edit({
+            Adornee = profiler.Target,
+            Enabled = true,
+        })
+
+        if CurrentCamera:WorldToScreenPoint(profiler.Target:GetPivot().Position).Z < 0 then
+            profiler.Target = nil
         end
+    else
+        profiler:SetVisible(false, true)
 
-        local highestPriority = 0
-        local currentMode
-        for _, mode in pairs(passed) do
-            if mode.Priority > highestPriority then
-                highestPriority = mode.Priority
-                currentMode = mode
-            end
-        end
-        currentMode.func(profiler)
-
-        profiler:SetColor(currentMode.Color)
-
-        profiler.Info.Image.Image = plrInfo.Image
-        typeWrite(profiler.Info.Name, plrInfo.DisplayName ~= plrInfo.Name and " " .. plrInfo.DisplayName .. " @" .. plrInfo.Name or " " .. plrInfo.Name)
-        typeWrite(profiler.Info.Age, " Age: " .. tostring(plrInfo.Age))
-        typeWrite(profiler.Info.RAP, " RAP: " .. tostring(plrInfo.RAP))
-        typeWrite(profiler.Info.Interest, " " .. profiler:GetRandomInterest())
-        typeWrite(profiler.Info.Occupation, " Occupation: " .. profiler:GetRandomOccupation())
-        task.wait(0.2)
-        profiler:SetVisible(true, true)
-    end)
-
-    profiler.profilerCon = RunService.RenderStepped:Connect(function(dt)
-        profilerPart.CFrame = profilerPart.CFrame:Lerp(CFrame.new(profilerPart.Position, CurrentCamera.CFrame.Position),
-            dt * 2)
-        profilerPart.Position = (CurrentCamera.CFrame * profiler.Offset).Position
-
-        if profiler.Target then
+        local mouseTarget = Mouse.Target
+        if mouseTarget and mouseTarget.Parent:FindFirstChildOfClass("Humanoid") and
+            mouseTarget.Parent ~= LocalPlayer.Character then
             profiler.Highlight:Edit({
-                Adornee = profiler.Target,
+                Adornee = mouseTarget.Parent,
                 Enabled = true,
             })
-
-            if CurrentCamera:WorldToScreenPoint(profiler.Target:GetPivot().Position).Z < 0 then
-                profiler.Target = nil
-            end
         else
-            profiler:SetVisible(false, true)
-
-            local mouseTarget = Mouse.Target
-            if mouseTarget and mouseTarget.Parent:FindFirstChildOfClass("Humanoid") and
-                mouseTarget.Parent ~= LocalPlayer.Character then
-                profiler.Highlight:Edit({
-                    Adornee = mouseTarget.Parent,
-                    Enabled = true,
-                })
-            else
-                profiler.Highlight:Edit({
-                    Adornee = nil,
-                    Enabled = false,
-                })
-            end
+            profiler.Highlight:Edit({
+                Adornee = nil,
+                Enabled = false,
+            })
         end
-    end)
-
-    profiler.controlCon = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local mouseTarget = Mouse.Target
-            if mouseTarget and (mouseTarget.Parent:FindFirstChildOfClass("Humanoid") or mouseTarget.Parent.Parent:FindFirstChildOfClass("Humanoid")) and mouseTarget.Parent ~= LocalPlayer.Character then
-                local chr = mouseTarget.Parent:FindFirstChildOfClass("Humanoid") and mouseTarget.Parent or mouseTarget.Parent.Parent
-                profiler:SetTarget(chr)
-            else
-                profiler.Target = nil
-                profiler:SetVisible(false, true)
-            end
-        end
-    end)
-
-    function profiler:Init()
-        self:SetVisible(false)
-        self.Assets.BackgroundVideo.Video = videos.Glitch
-        self.Assets.BackgroundVideo.Looped = true
-        self.Assets.BackgroundVideo.Playing = true
-        self.Assets.BackgroundVideo.Volume = 0
     end
+end)
 
-    profiler:Init()
+profiler.controlCon = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        local mouseTarget = Mouse.Target
+        if mouseTarget and (mouseTarget.Parent:FindFirstChildOfClass("Humanoid") or mouseTarget.Parent.Parent:FindFirstChildOfClass("Humanoid")) and mouseTarget.Parent ~= LocalPlayer.Character then
+            local chr = mouseTarget.Parent:FindFirstChildOfClass("Humanoid") and mouseTarget.Parent or mouseTarget.Parent.Parent
+            profiler:SetTarget(chr)
+        else
+            profiler.Target = nil
+            profiler:SetVisible(false, true)
+        end
+    end
+end)
 
-    return profiler
+function profiler:Init()
+    self:SetVisible(false)
+    self.Assets.BackgroundVideo.Video = videos.Glitch
+    self.Assets.BackgroundVideo.Looped = true
+    self.Assets.BackgroundVideo.Playing = true
+    self.Assets.BackgroundVideo.Volume = 0
 end
+
+profiler:Init()
+
+return profiler
