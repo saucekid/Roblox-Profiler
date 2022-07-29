@@ -177,6 +177,7 @@ profiler.Info = {
 
 profiler.Modes = {
         ["Default"] = {
+            Image = "",
             Color = Color3.fromRGB(0, 0, 0),
             check = function() return true end,
             func = function()
@@ -186,6 +187,7 @@ profiler.Modes = {
             Priority = 1
         },
         ["Dead"] = {
+            Image = images.Skull,
             Color = Color3.fromRGB(219, 57, 60),
             check = function(plr)
                 if plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") and
@@ -201,6 +203,7 @@ profiler.Modes = {
             Priority = 10
         },
         ["RAP"] = {
+            Image = images.RAP,
             Color = Color3.fromRGB(2, 196, 255),
             check = function(plr)
                 if plr.RAP > 0 then
@@ -215,6 +218,7 @@ profiler.Modes = {
             Priority = 2
         },
         ["Friend"] = {
+            Image = images.Friend,
             Color = Color3.fromRGB(70, 140, 0),
             check = function(plr)
                 if LocalPlayer:IsFriendsWith(plr.UserId) then
@@ -308,7 +312,13 @@ profiler.OnTarget = profiler.TargetEvent.Event:Connect(function(plrInfo)
     end
     currentMode.func(profiler)
     profiler:SetColor(currentMode.Color)
-    
+    profiler.Info.InfoImage.Image = currentMode.Image
+    profiler.Info.InfoImage2.Image = currentMode.Image
+    if plrInfo.RAP == 0  then
+        profiler.Info.RAP.Visible = false
+    else
+        profiler.Info.RAP.Visible = true
+    end
     profiler.Info.Image.Image = plrInfo.Image
     typeWrite(profiler.Info.Name, plrInfo.DisplayName ~= plrInfo.Name and " " .. plrInfo.DisplayName .. " @" .. plrInfo.Name or " " .. plrInfo.Name)
     typeWrite(profiler.Info.Age, " Age: " .. tostring(plrInfo.Age))
@@ -337,12 +347,15 @@ profiler.profilerCon = RunService.RenderStepped:Connect(function(dt)
         profiler:SetVisible(false, true)
 
         local mouseTarget = Mouse.Target
-        if mouseTarget and mouseTarget.Parent:FindFirstChildOfClass("Humanoid") and
-            mouseTarget.Parent ~= LocalPlayer.Character then
+        if mouseTarget and (mouseTarget.Parent:FindFirstChildOfClass("Humanoid") or mouseTarget.Name == "Handle")  then
+            
+            local chr = mouseTarget.Name == "Handle" and mouseTarget.Parent.Parent or mouseTarget.Parent
+            if chr ~= LocalPlayer.Character then
             profiler.Highlight:Edit({
                 Adornee = mouseTarget.Parent,
                 Enabled = true,
             })
+            end
         else
             profiler.Highlight:Edit({
                 Adornee = nil,
@@ -356,9 +369,11 @@ profiler.controlCon = UserInputService.InputBegan:Connect(function(input, gamePr
     if gameProcessed then return end
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         local mouseTarget = Mouse.Target
-        if mouseTarget and (mouseTarget.Parent:FindFirstChildOfClass("Humanoid") or mouseTarget.Parent.Parent:FindFirstChildOfClass("Humanoid")) and mouseTarget.Parent ~= LocalPlayer.Character then
-            local chr = mouseTarget.Parent:FindFirstChildOfClass("Humanoid") and mouseTarget.Parent or mouseTarget.Parent.Parent
-            profiler:SetTarget(chr)
+        if mouseTarget and (mouseTarget.Parent:FindFirstChildOfClass("Humanoid") or mouseTarget.Name == "Handle") then
+            local chr = mouseTarget.Name == "Handle" and mouseTarget.Parent.Parent or mouseTarget.Parent
+            if chr ~= LocalPlayer.Character then
+                profiler:SetTarget(chr)
+            end
         else
             profiler.Target = nil
             profiler:SetVisible(false, true)
