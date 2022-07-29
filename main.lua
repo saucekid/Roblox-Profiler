@@ -253,8 +253,8 @@ end
 
 function profiler:SetColor(color, name)
     local brightness = (color.R + color.G + color.B) / 3
-    self.Info.InfoImage.Color = brightness >= 0.5 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
-    self.Info.InfoImage2.Color = brightness >= 0.5 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
+    self.Info.InfoImage.ImageColor3 = brightness >= 0.5 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
+    self.Info.InfoImage2.ImageColor3 = brightness >= 0.5 and Color3.new(0, 0, 0) or Color3.new(1, 1, 1)
     for _, t in pairs(self.Assets.ColorTargets) do
         t.Target[t.Change] = color
     end
